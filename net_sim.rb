@@ -3,7 +3,7 @@
 # 各種共通処理
 class Node
 
-	# 種類ごとの連番で名前を生成
+  # 種類ごとの連番で名前を生成
   attr_reader :name
   def self.name
     @x ||= 0
@@ -15,48 +15,48 @@ class Node
   end
 
   # トレース表示
-	def send packet
-		puts "#{@name} send #{packet}"
-	end
-	def recv packet, from:
-		puts "#{@name} recv #{packet} from #{from.name}"
-	end
-	def reject packet
-		puts "#{@name} reject #{packet}"
-	end
-	def do_something packet
-		puts "#{@name} do_something #{packet}"
-	end
+  def send packet
+    puts "#{@name} send #{packet}"
+  end
+  def recv packet, from:
+    puts "#{@name} recv #{packet} from #{from.name}"
+  end
+  def reject packet
+    puts "#{@name} reject #{packet}"
+  end
+  def do_something packet
+    puts "#{@name} do_something #{packet}"
+  end
 end
 
 # PC
 class PC < Node
-	def connect other; @other = other; end
-	def send packet; super; @other.recv packet,from:self; end
-	def recv packet,from:
-		super
-		if packet[0] == @addr then do_something packet else reject packet end
-	end
+  def connect other; @other = other; end
+  def send packet; super; @other.recv packet,from:self; end
+  def recv packet,from:
+    super
+    if packet[0] == @addr then do_something packet else reject packet end
+  end
 end
 
 # ハブ
 class Hub < Node
-	def connect other; @connections=[] if @connections.nil?; @connections << other; end
-	def recv packet, from:
-		super
-		@connections.each do |conn|
-			next if conn.equal? from
-			conn.recv packet, from:self
-		end
-	end
+  def connect other; @connections=[] if @connections.nil?; @connections << other; end
+  def recv packet, from:
+    super
+    @connections.each do |conn|
+      next if conn.equal? from
+      conn.recv packet, from:self
+    end
+  end
 end
 
 # とりあえずインスタンスなしのモジュールで実装
 module Cable
-	def self.connect x,y
-		x.connect y
-		y.connect x
-	end
+  def self.connect x,y
+    x.connect y
+    y.connect x
+  end
 end
 
 # model
